@@ -1,0 +1,7 @@
+## Tonesque
+
+A WordPress plugin containing a class that lets you grab an average color representation of an image passed as a parameter on construction. It can be used for generating a background color for an image post that matches the uploaded image.
+
+The plugin is inspired by the Duotone WordPress theme, but with the goal of allowing any theme or plugin to have that image-magic without having to develop it themselves. The color processing looks for an average color between a couple of important points on the image.
+
+Note: Relies on class.color for convertions and utility.
