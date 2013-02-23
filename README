@@ -5,3 +5,21 @@ A WordPress plugin containing a class that lets you grab an average color repres
 The plugin is inspired by the Duotone WordPress theme, but with the goal of allowing any theme or plugin to have that image-magic without having to develop it themselves. The color processing looks for an average color between a couple of important points on the image.
 
 Note: Relies on class.color for convertions and utility.
+
+## Usage
+
+Pass a url parameter to Tonesque class. Then get color using $this->color( 'hex|rgb' ). The returned string defaults to hex.
+
+<?php
+
+	$src = 'image/path/image.jpg';
+
+	$tonesque = new Tonesque( $src );
+
+	// get color in hex format
+	$color = $tonesque->color();
+
+	// get black or white depending on main color
+	$black_or_white = $tonesque->contrast();
+
+?>
