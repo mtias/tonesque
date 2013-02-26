@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Tonesque
-Plugin URI: http://automattic.com/
+Plugin URI: https://github.com/mtias/tonesque
 Description: Class to grab an average color representation from an image.
 Version: 1.0
 Author: Matias Ventura
@@ -16,7 +16,7 @@ class Tonesque {
 	private $color = '';
 
 	function __construct( $image ) {
-		require_lib( 'class.color' );
+		require_once __DIR__ . '/class.color.php';
 		$this->image = esc_url_raw( $image );
 	}
 
@@ -28,7 +28,7 @@ class Tonesque {
 	 * @return color as a string formatted as $type
 	 *
  	 */
-	function color( $type = 'hex' ) {
+	function color( $points = 5, $type = 'hex' ) {
 		// Bail if there is no image to work with
 	 	if ( ! $this->image )
 			return false;
@@ -56,7 +56,7 @@ class Tonesque {
 		}
 
 		// Finds dominant color
-		$color = self::grab_color( $img );
+		$color = self::grab_color( $img, $points );
 		// Passes value to Color class
 		$color = self::get_color( $color, $type );
 		return $color;
@@ -70,7 +70,7 @@ class Tonesque {
 	 * @return array() with rgb color
 	 *
  	 */
-	function grab_color( $image ) {
+	function grab_color( $image, $points ) {
 		$img = $image;
 
 		$height = imagesy( $img );
@@ -94,6 +94,8 @@ class Tonesque {
 			imagecolorat( $img, $centerx, $centery ),
 		);
 
+		// todo: use $points
+
 		// Process the color points
 		// Find the average representation
 		for ( $i = 0; $i <= count( $rgb ) - 1; $i++ ) {
@@ -101,9 +103,9 @@ class Tonesque {
 			$g[ $i ] = ( $rgb[ $i ] >> 8 ) & 0xFF;
 			$b[ $i ] = $rgb[ $i ] & 0xFF;
 
-			$red = round( array_sum( $r ) / 5 );
-			$green = round( array_sum( $g ) / 5 );
-			$blue = round( array_sum( $b ) / 5 );
+			$red = round( array_sum( $r ) / $points );
+			$green = round( array_sum( $g ) / $points );
+			$blue = round( array_sum( $b ) / $points );
 		}
 
 		// The average color of the image as rgb array
