@@ -206,9 +206,7 @@ class Color {
 	 */
 	public function toRgbHex()
 	{
-		return array_map(function($item){
-			return dechex($item);
-		}, $this->toRgbInt());
+		return array_map( 'dechex', $this->toRgbInt() );
 	}
 
 	/**
@@ -398,18 +396,9 @@ class Color {
 		$rgb = $this->toRgbInt();
 
 		// Normalize RGB values to 1
-		$rgb = array_map(function($item){
-			return $item / 255;
-		}, $rgb);
+		$rgb = array_map( array( &$this, 'normalizeRgb' ) , $rgb );
 
-		$rgb = array_map(function($item){
-			if ($item > 0.04045) {
-				$item = pow((($item + 0.055) / 1.055), 2.4);
-			} else {
-				$item = $item / 12.92;
-			}
-			return ($item * 100);
-		}, $rgb);
+		$rgb = array_map( array( &$this, 'toXyz_calc' ) , $rgb );
 
 		//Observer. = 2°, Illuminant = D65
 		$xyz = array(
@@ -435,14 +424,7 @@ class Color {
 		$xyz['y'] /= 100;
 		$xyz['z'] /= 108.883;
 
-		$xyz = array_map(function($item){
-			if ($item > 0.008856) {
-				//return $item ^ (1/3);
-				return pow($item, 1/3);
-			} else {
-				return (7.787 * $item) + (16 / 116);
-			}
-		}, $xyz);
+		$xyz = array_map( array( &$this, 'toLabCie_calc' ) , $xyz );
 
 		$lab = array(
 			'l' => (116 * $xyz['y']) - 16,
@@ -741,4 +723,25 @@ class Color {
 		return $this->fromHsl( $h, $s, $l );
 	}
 
+	public function normalizeRgb( $item ) {
+		return $item / 255;
+	}
+
+	public function toXyz_calc( $item ) {
+		if ( $item > 0.04045 ) {
+			$item = pow( ( ( $item + 0.055 ) / 1.055 ), 2.4 );
+		} else {
+			$item = $item / 12.92;
+		}
+		return ( $item * 100 );
+	}
+
+	public function toLabCie_calc( $item ) {
+		if ( $item > 0.008856 ) {
+			//return $item ^ (1/3);
+			return pow( $item, 1/3 );
+		} else {
+			return ( 7.787 * $item ) + ( 16 / 116 );
+		}
+	}
 } // class Color

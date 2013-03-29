@@ -16,7 +16,8 @@ class Tonesque {
 	private $color = '';
 
 	function __construct( $image ) {
-		require_once __DIR__ . '/class.color.php';
+		if ( ! class_exists( 'Color' ) )
+			require_once dirname( __FILE__ ) . '/class.color.php';
 		$this->image = esc_url_raw( $image );
 	}
 
