@@ -16,7 +16,8 @@ class Tonesque {
 	private $color = '';
 
 	function __construct( $image ) {
-		require_once __DIR__ . '/class.color.php';
+		if ( ! class_exists( 'Color' ) )
+			require_once __DIR__ . '/class.color.php';
 		$this->image = esc_url_raw( $image );
 	}
 
@@ -98,10 +99,11 @@ class Tonesque {
 
 		// Process the color points
 		// Find the average representation
-		for ( $i = 0; $i <= count( $rgb ) - 1; $i++ ) {
-			$r[ $i ] = ( $rgb[ $i ] >> 16 ) & 0xFF;
-			$g[ $i ] = ( $rgb[ $i ] >> 8 ) & 0xFF;
-			$b[ $i ] = $rgb[ $i ] & 0xFF;
+		foreach ( $rgb as $color ) {
+			$index = imagecolorsforindex( $img, $color );
+			$r[] = $index['red'];
+			$g[] = $index['green'];
+			$b[] = $index['blue'];
 
 			$red = round( array_sum( $r ) / $points );
 			$green = round( array_sum( $g ) / $points );
